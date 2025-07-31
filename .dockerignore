@@ -1,0 +1,9 @@
+docker/
+tests/
+.git/
+*.md
+*.env
+.vscode/
+.idea/
+*.log
+*.tmp
