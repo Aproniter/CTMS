@@ -1,0 +1,19 @@
+ /bin/
+ /build/
+ *.exe
+ *.out
+
+ /vendor/
+
+ *.log
+ *.tmp
+
+ .vscode/
+ .idea/
+
+ *.env
+
+ .DS_Store
+
+ # Docker
+ docker/
