@@ -1,25 +1,17 @@
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                                                                          Casino Transaction Management System                                                                          ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-                                                                                                                                                                                          
-                                                                                                                                                                                          
-                                                                                         Overview                                                                                         
+ Casino Transaction Management System 
+ Overview                                                                                         
                                                                                                                                                                                           
 This project implements a simple transaction management system for a casino. It tracks user transactions related to bets and wins, processes them asynchronously via RabbitMQ, stores data
 in PostgreSQL, and exposes a REST API for querying transaction data.                                                                                                                      
                                                                                                                                                                                           
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-                                                                                                                                                                                          
-                                                                                        Components                                                                                        
+ Components                                                                                        
                                                                                                                                                                                           
  • Message System: RabbitMQ is used to receive and process bet/win transaction messages asynchronously.                                                                                   
  • Database: PostgreSQL stores transaction data with fields: user_id, transaction_type (bet or win), amount, and timestamp.                                                               
  • API: A Go-based REST API allows querying transactions with filtering by user and transaction type.                                                                                     
  • Consumer: A Go service consumes messages from RabbitMQ and saves transactions to the database.                                                                                         
 
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-                                                                                      Setup and Run                                                                                       
+ Setup and Run                                                                                       
 
  1 Navigate to the docker directory:          
 
@@ -62,11 +54,8 @@ in PostgreSQL, and exposes a REST API for querying transaction data.
  go test ./tests -v                                                                                                                                                                       
                                                                                                                                                                                           
 
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-                                                                                          Usage                                                                                           
-
-                                                                                   Sending Transactions                                                                                   
+ Usage                                                                                           
+ Sending Transactions                                                                                   
 
  • Use RabbitMQ UI or any AMQP client to publish messages to the transactions queue.                                                                                                      
  • Message format (JSON):                                                                                                                                                                 
@@ -105,9 +94,7 @@ in PostgreSQL, and exposes a REST API for querying transaction data.
  curl "http://localhost:8080/transactions?user_id=1&transaction_type=bet"                                                                                                                 
                                                                                                                                                                                           
 
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-                                                                                         Testing                                                                                          
+ Testing                                                                                          
 
  • Unit and integration tests are located in the tests/ directory.                           
  • Integration tests require the test PostgreSQL database (postgres_test) and RabbitMQ to be running.                                                                                     
@@ -117,9 +104,7 @@ in PostgreSQL, and exposes a REST API for querying transaction data.
  go test ./tests -v                                                                                                                                                                       
                                                                                                                                                                                           
 
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-                                                                                    Stopping Services
+ Stopping Services
 
 To stop all running containers:                                                                                                                                                           
 
@@ -127,9 +112,8 @@ To stop all running containers:
  docker-compose down                                                                                                                                                                      
                                                                                                                                                                                           
 
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-                                                                                     Additional Notes                                                                                     
+ 
+ Additional Notes                                                                                     
 
  • Always run Docker Compose commands from the docker directory to ensure correct paths.                                                                                                  
  • For integration tests, ensure environment variables point to the test database and RabbitMQ.                                                                                           
