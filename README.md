@@ -1,120 +1,122 @@
- Casino Transaction Management System 
- Overview                                                                                         
-                                                                                                                                                                                          
-This project implements a simple transaction management system for a casino. It tracks user transactions related to bets and wins, processes them asynchronously via RabbitMQ, stores data
-in PostgreSQL, and exposes a REST API for querying transaction data.                                                                                                                      
-                                                                                                                                                                                          
- Components                                                                                        
-                                                                                                                                                                                          
- • Message System: RabbitMQ is used to receive and process bet/win transaction messages asynchronously.                                                                                   
- • Database: PostgreSQL stores transaction data with fields: user_id, transaction_type (bet or win), amount, and timestamp.                                                               
- • API: A Go-based REST API allows querying transactions with filtering by user and transaction type.                                                                                     
- • Consumer: A Go service consumes messages from RabbitMQ and saves transactions to the database.                                                                                         
+# Casino Transaction Management System
 
- Setup and Run                                                                                       
+## Overview
 
- 1 Navigate to the docker directory:          
+This project implements a simple transaction management system for a casino. It tracks user transactions related to bets and wins, processes them asynchronously via RabbitMQ, stores data in PostgreSQL, and exposes a REST API for querying transaction data.
 
-                                                                                                                                                                                          
- cd docker                                                                                                                                                                                
-                                                                                                                                                                                          
+## Components
 
- 2 For normal application run:                
+- **Message System:** RabbitMQ is used to receive and process bet/win transaction messages asynchronously.  
+- **Database:** PostgreSQL stores transaction data with fields: `user_id`, `transaction_type` (bet or win), `amount`, and `timestamp`.  
+- **API:** A Go-based REST API allows querying transactions with filtering by user and transaction type.  
+- **Consumer:** A Go service consumes messages from RabbitMQ and saves transactions to the database.  
 
- • Ensure the postgres_test service is commented out or removed in docker-compose.yml.       
- • Start the main services:                   
+## Setup and Run
 
-                                                                                                                                                                                          
- docker-compose up -d api consumer postgres rabbitmq                                                                                                                                      
-                                                                                                                                                                                          
+### 1. Navigate to the `docker` directory:
 
- 3 For integration testing:                   
+```bash
+cd docker
+```
 
- • Uncomment the postgres_test service in docker-compose.yml.                                
- • Start the test database and RabbitMQ:      
+### 2. For normal application run:
 
-                                                                                                                                                                                          
- docker-compose up -d postgres_test rabbitmq                                                                                                                                              
-                                                                                                                                                                                          
+- Ensure the `postgres_test` service is commented out or removed in `docker-compose.yml`.
+- Start the main services:
 
- • Set environment variables for tests to connect to the test database and RabbitMQ:         
+```bash
+docker-compose up -d api consumer postgres rabbitmq
+```
 
-                                                                                                                                                                                          
- export TEST_DB_USER=postgres                                                                                                                                                             
- export TEST_DB_PASSWORD=postgres                                                                                                                                                         
- export TEST_DB_HOST=localhost                                                                                                                                                            
- export TEST_DB_PORT=5433                                                                                                                                                                 
- export TEST_DB_NAME=casino_test                                                                                                                                                          
- export TEST_RABBITMQ_URL=amqp://guest:guest@localhost:5672/                                                                                                                              
- export TEST_RABBITMQ_QUEUE=transactions                                                                                                                                                  
-                                                                                                                                                                                          
+### 3. For integration testing:
 
- • Run tests:
-                                                                                                                                                                                           
- go test ./tests -v                                                                                                                                                                       
-                                                                                                                                                                                          
+- Uncomment the `postgres_test` service in `docker-compose.yml`.
+- Start the test database and RabbitMQ:
 
- Usage                                                                                           
- Sending Transactions                                                                                   
+```bash
+docker-compose up -d postgres_test rabbitmq
+```
 
- • Use RabbitMQ UI or any AMQP client to publish messages to the transactions queue.                                                                                                      
- • Message format (JSON):                                                                                                                                                                 
+- Set environment variables for tests to connect to the test database and RabbitMQ:
 
-                                                                                                                                                                                          
- {                                                                                                                                                                                        
-   "user_id": 1,                                                                                                                                                                          
-   "transaction_type": "bet",                                                                                                                                                             
-   "amount": 100.0,                                                                                                                                                                       
-   "timestamp": "2024-01-01T12:00:00Z"                                                                                                                                                    
- } 
+```bash
+export TEST_DB_USER=postgres
+export TEST_DB_PASSWORD=postgres
+export TEST_DB_HOST=localhost
+export TEST_DB_PORT=5433
+export TEST_DB_NAME=casino_test
+export TEST_RABBITMQ_URL=amqp://guest:guest@localhost:5672/
+export TEST_RABBITMQ_QUEUE=transactions
+```
 
- Querying Transactions                                                                                   
+- Run tests:
 
- • Get all transactions:                      
+```bash
+go test ./tests -v
+```
 
-                                                                                                                                                                                          
- curl http://localhost:8080/transactions                                                                                                                                                  
-                                                                                                                                                                                          
+## Usage
 
- • Filter by user:                            
+### Sending Transactions
 
-                                                                                                                                                                                          
- curl "http://localhost:8080/transactions?user_id=1"                                                                                                                                      
-                                                                                                                                                                                          
+- Use RabbitMQ UI or any AMQP client to publish messages to the `transactions` queue.
+- Message format (JSON):
 
- • Filter by transaction type:                
+```json
+{
+  "user_id": 1,
+  "transaction_type": "bet",
+  "amount": 100.0,
+  "timestamp": "2024-01-01T12:00:00Z"
+}
+```
 
-                                                                                                                                                                                          
- curl "http://localhost:8080/transactions?transaction_type=win"                                                                                                                           
-                                                                                                                                                                                          
+### Querying Transactions
 
- • Combined filter:                           
+- Get all transactions:
 
-                                                                                                                                                                                          
- curl "http://localhost:8080/transactions?user_id=1&transaction_type=bet"                                                                                                                 
-                                                                                                                                                                                          
+```bash
+curl http://localhost:8080/transactions
+```
 
- Testing                                                                                          
+- Filter by user:
 
- • Unit and integration tests are located in the tests/ directory.                           
- • Integration tests require the test PostgreSQL database (postgres_test) and RabbitMQ to be running.                                                                                     
- • Run all tests with:                        
+```bash
+curl "http://localhost:8080/transactions?user_id=1"
+```
 
-                                                                                                                                                                                          
- go test ./tests -v                                                                                                                                                                       
-                                                                                                                                                                                          
+- Filter by transaction type:
 
- Stopping Services
+```bash
+curl "http://localhost:8080/transactions?transaction_type=win"
+```
 
-To stop all running containers:                                                                                                                                                           
+- Combined filter:
 
-                                                                                                                                                                                          
- docker-compose down                                                                                                                                                                      
-                                                                                                                                                                                          
+```bash
+curl "http://localhost:8080/transactions?user_id=1&transaction_type=bet"
+```
 
- 
- Additional Notes                                                                                     
+## Testing
 
- • Always run Docker Compose commands from the docker directory to ensure correct paths.                                                                                                  
- • For integration tests, ensure environment variables point to the test database and RabbitMQ.                                                                                           
- • The postgres_test service should be disabled during normal runs to avoid conflicts.
+- Unit and integration tests are located in the `tests/` directory.  
+- Integration tests require the test PostgreSQL database (`postgres_test`) and RabbitMQ to be running.  
+- Run all tests with:
+
+```bash
+go test ./tests -v
+```
+
+## Stopping Services
+
+To stop all running containers:
+
+```bash
+docker-compose down
+```
+
+## Additional Notes
+
+- Always run Docker Compose commands from the `docker` directory to ensure correct paths.
+- For integration tests, ensure environment variables point to the test database and RabbitMQ.
+- The `postgres_test` service should be disabled during normal runs to avoid conflicts.
